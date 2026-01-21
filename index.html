@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Revenus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            padding: 30px;
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #6366f1, #d946ef);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            font-size: 32px;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 12px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #6366f1;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #6366f1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #334155;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        .result-row:last-child {
+            border-bottom: none;
+            margin-top: 8px;
+            padding-top: 16px;
+            border-top: 2px solid #6366f1;
+        }
+        
+        .result-label {
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 15px;
+        }
+        
+        .total-label {
+            color: #6366f1;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .total-value {
+            color: #6366f1;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .info {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            border-left: 4px solid #6366f1;
+            padding: 14px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #475569;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 16px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+        }
+        
+        tr:hover {
+            background: #fafbff;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            transition: transform 0.2s;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .summary-card h3 {
+            font-size: 11px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .summary-card .value {
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .delete-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: #64748b;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 11px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💸 Money Tracker</h1>
+        <p class="subtitle">Track tes revenus quotidiens</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('calculateur')">📊 Calculateur</button>
+            <button class="tab" onclick="switchTab('historique')">📅 Historique</button>
+        </div>
+        
+        <!-- Onglet Calculateur -->
+        <div id="calculateur" class="tab-content active">
+            <div class="input-group">
+                <label for="date">📅 Date</label>
+                <input type="date" id="date">
+            </div>
+            
+            <div class="input-group">
+                <label for="caAvant">🌙 CA avant 2h</label>
+                <input type="number" id="caAvant" placeholder="1000.00" step="0.01" value="0">
+            </div>
+            
+            <div class="input-group">
+                <label for="caApres">☀️ CA après 2h</label>
+                <input type="number" id="caApres" placeholder="500.00" step="0.01" value="0">
+            </div>
+            
+            <div class="results">
+                <div class="result-row">
+                    <span class="result-label">CA total</span>
+                    <span class="result-value" id="caTotal">0.00 $</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Commission (20%)</span>
+                    <span class="result-value" id="commission">0.00 $</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Après commission</span>
+                    <span class="result-value" id="apresCommission">0.00 $</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Part avant 2h (15%)</span>
+                    <span class="result-value" id="partAvant">0.00 $</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">Part après 2h (20%)</span>
+                    <span class="result-value" id="partApres">0.00 $</span>
+                </div>
+                <div class="result-row">
+                    <span class="total-label">Ton Revenu</span>
+                    <span class="total-value" id="revenuTotal">0.00 $</span>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="sauvegarderJournee()">💾 Sauvegarder</button>
+            
+            <div class="info">
+                <strong>💡 Info :</strong> Commission 20% déduite → Tu touches 15% du CA avant 2h et 20% du CA après 2h (sur les 80% restants)
+            </div>
+        </div>
+        
+        <!-- Onglet Historique -->
+        <div id="historique" class="tab-content">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h3>💰 CA Brut</h3>
+                    <div class="value" id="totalCaBrut">0 $</div>
+                </div>
+                <div class="summary-card">
+                    <h3>💸 Commissions</h3>
+                    <div class="value" id="totalCommissions">0 $</div>
+                </div>
+                <div class="summary-card">
+                    <h3>🎯 Tes Revenus</h3>
+                    <div class="value" id="totalRevenus">0 $</div>
+                </div>
+            </div>
+            
+            <div class="table-wrapper">
+                <div id="tableContainer"></div>
+            </div>
+            
+            <button class="btn btn-danger" onclick="effacerHistorique()">🗑️ Tout effacer</button>
+        </div>
+    </div>
+    
+    <script>
+        let historique = [];
+        
+        function chargerHistorique() {
+            const data = localStorage.getItem('historiqueCA');
+            if (data) {
+                historique = JSON.parse(data);
+            }
+            afficherHistorique();
+        }
+        
+        document.getElementById('date').valueAsDate = new Date();
+        
+        const caAvantInput = document.getElementById('caAvant');
+        const caApresInput = document.getElementById('caApres');
+        
+        function calculer() {
+            const caAvant = parseFloat(caAvantInput.value) || 0;
+            const caApres = parseFloat(caApresInput.value) || 0;
+            
+            const caTotal = caAvant + caApres;
+            const commission = caTotal * 0.20;
+            const apresCommission = caTotal * 0.80;
+            
+            const partAvant = (caAvant * 0.80) * 0.15;
+            const partApres = (caApres * 0.80) * 0.20;
+            const revenuTotal = partAvant + partApres;
+            
+            document.getElementById('caTotal').textContent = caTotal.toFixed(2) + ' $';
+            document.getElementById('commission').textContent = commission.toFixed(2) + ' $';
+            document.getElementById('apresCommission').textContent = apresCommission.toFixed(2) + ' $';
+            document.getElementById('partAvant').textContent = partAvant.toFixed(2) + ' $';
+            document.getElementById('partApres').textContent = partApres.toFixed(2) + ' $';
+            document.getElementById('revenuTotal').textContent = revenuTotal.toFixed(2) + ' $';
+        }
+        
+        function sauvegarderJournee() {
+            const date = document.getElementById('date').value;
+            const caAvant = parseFloat(caAvantInput.value) || 0;
+            const caApres = parseFloat(caApresInput.value) || 0;
+            
+            if (!date) {
+                alert('⚠️ Choisis une date !');
+                return;
+            }
+            
+            if (caAvant === 0 && caApres === 0) {
+                alert('⚠️ Entre au moins un CA !');
+                return;
+            }
+            
+            const caTotal = caAvant + caApres;
+            const commission = caTotal * 0.20;
+            const partAvant = (caAvant * 0.80) * 0.15;
+            const partApres = (caApres * 0.80) * 0.20;
+            const revenuTotal = partAvant + partApres;
+            
+            const journee = {
+                date,
+                caAvant,
+                caApres,
+                caTotal,
+                commission,
+                revenuTotal
+            };
+            
+            const index = historique.findIndex(j => j.date === date);
+            if (index !== -1) {
+                if (confirm('Cette date existe déjà. Remplacer ?')) {
+                    historique[index] = journee;
+                } else {
+                    return;
+                }
+            } else {
+                historique.push(journee);
+            }
+            
+            historique.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem('historiqueCA', JSON.stringify(historique));
+            
+            alert('✅ Sauvegardé !');
+            afficherHistorique();
+        }
+        
+        function afficherHistorique() {
+            const container = document.getElementById('tableContainer');
+            
+            if (historique.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3>Aucune entrée</h3>
+                        <p>Sauvegarde ta première journée pour commencer !</p>
+                    </div>
+                `;
+            } else {
+                let tableHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>CA <2h</th>
+                                <th>CA >2h</th>
+                                <th>Total</th>
+                                <th>Com.</th>
+                                <th>Revenu</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                historique.forEach((j, index) => {
+                    const dateFormatee = new Date(j.date + 'T00:00:00').toLocaleDateString('fr-FR', {day: '2-digit', month: '2-digit'});
+                    tableHTML += `
+                        <tr>
+                            <td><strong>${dateFormatee}</strong></td>
+                            <td>${j.caAvant.toFixed(0)}$</td>
+                            <td>${j.caApres.toFixed(0)}$</td>
+                            <td><strong>${j.caTotal.toFixed(0)}$</strong></td>
+                            <td>${j.commission.toFixed(0)}$</td>
+                            <td><strong style="color: #6366f1;">${j.revenuTotal.toFixed(2)}$</strong></td>
+                            <td><button class="delete-btn" onclick="supprimerJournee(${index})">🗑️</button></td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+            }
+            
+            const totalCaBrut = historique.reduce((sum, j) => sum + j.caTotal, 0);
+            const totalCommissions = historique.reduce((sum, j) => sum + j.commission, 0);
+            const totalRevenus = historique.reduce((sum, j) => sum + j.revenuTotal, 0);
+            
+            document.getElementById('totalCaBrut').textContent = totalCaBrut.toFixed(0) + ' $';
+            document.getElementById('totalCommissions').textContent = totalCommissions.toFixed(0) + ' $';
+            document.getElementById('totalRevenus').textContent = totalRevenus.toFixed(2) + ' $';
+        }
+        
+        function supprimerJournee(index) {
+            if (confirm('Supprimer cette journée ?')) {
+                historique.splice(index, 1);
+                localStorage.setItem('historiqueCA', JSON.stringify(historique));
+                afficherHistorique();
+            }
+        }
+        
+        function effacerHistorique() {
+            if (confirm('⚠️ Effacer TOUT l\'historique ? Irréversible !')) {
+                historique = [];
+                localStorage.removeItem('historiqueCA');
+                afficherHistorique();
+                alert('✅ Effacé !');
+            }
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'historique') {
+                afficherHistorique();
+            }
+        }
+        
+        caAvantInput.addEventListener('input', calculer);
+        caApresInput.addEventListener('input', calculer);
+        
+        chargerHistorique();
+        calculer();
+    </script>
+</body>
+</html>
